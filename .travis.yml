@@ -6,8 +6,17 @@ services:
 
 before_install:
   - docker build -t asad7860/fullstack-backend-test -f ./backend/Dockerfile.dev ./backend
-  - docker build -t fullstack-frontend-test -f ./frontend/Dockerfile.dev ./frontend
+  - docker build -t asad7860/fullstack-frontend-test -f ./frontend/Dockerfile.dev ./frontend
 
 script:
-  - docker run fullstack-backend npm run test
-  - docker run fullstack-frontend npm run test
+  - docker run asad7860/fullstack-backend npm run test
+  - docker run asad7860/fullstack-frontend npm run test
+
+after_success:
+  - docker build -t asad7860/fullstack-backend ./backend
+  - docker build -t asad7860/fullstack-frontend ./frontend
+
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+  - docker push asad7860/fullstack-backend
+  - docker push asad7860/fullstack-frontend
