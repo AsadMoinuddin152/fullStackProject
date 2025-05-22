@@ -1,0 +1,13 @@
+sudo: required
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - docker build -t asad7860/fullstack-backend-test -f ./backend/Dockerfile.dev ./backend
+  - docker build -t fullstack-frontend-test -f ./frontend/Dockerfile.dev ./frontend
+
+script:
+  - docker run fullstack-backend npm run test
+  - docker run fullstack-frontend npm run test
