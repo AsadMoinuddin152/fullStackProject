@@ -1,0 +1,49 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/node:16.20
+    working_directory: ~/app
+
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - run:
+          name: Build Docker test images for backend and frontend
+          command: |
+            docker build -t asad7860/fullstack-backend-test -f ./backend/Dockerfile.dev ./backend
+            docker build -t asad7860/fullstack-frontend-test -f ./frontend/Dockerfile.dev ./frontend
+
+      - run:
+          name: Run backend tests
+          command: docker run asad7860/fullstack-backend-test npm run test
+
+      - run:
+          name: Run frontend tests
+          command: docker run asad7860/fullstack-frontend-test npm run test
+
+      - run:
+          name: Build production Docker images
+          command: |
+            docker build -t asad7860/fullstack-backend ./backend
+            docker build -t asad7860/fullstack-frontend ./frontend
+
+      - run:
+          name: Docker Login
+          command: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - run:
+          name: Push Docker images to Docker Hub
+          command: |
+            docker push asad7860/fullstack-backend
+            docker push asad7860/fullstack-frontend
+
+workflows:
+  version: 2
+  full_pipeline:
+    jobs:
+      - build
