@@ -24,13 +24,12 @@ afterAll(async () => {
 
 describe("User Routes", () => {
   test("Should sign up a new user", async () => {
-    const res = await request(app).post("/api/users/signup").send({
+    const res = await request(app).post("/users/signup").send({
       name: "Test User",
       email: "test@example.com",
       password: "Password123",
       phone: "1234567890",
     });
-
     expect(res.statusCode).toBe(201);
     expect(res.body.token).toBeDefined();
     expect(res.body.user.name).toBe("Test User");
@@ -40,7 +39,7 @@ describe("User Routes", () => {
   });
 
   test("Should login with correct credentials", async () => {
-    const res = await request(app).post("/api/users/login").send({
+    const res = await request(app).post("/users/login").send({
       email: "test@example.com",
       password: "Password123",
     });
@@ -51,7 +50,7 @@ describe("User Routes", () => {
 
   test("Should get all users", async () => {
     const res = await request(app)
-      .get("/api/users")
+      .get("/users")
       .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
@@ -60,7 +59,7 @@ describe("User Routes", () => {
 
   test("Should get user by ID", async () => {
     const res = await request(app)
-      .get(`/api/users/${userId}`)
+      .get(`/users/${userId}`)
       .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
@@ -68,7 +67,7 @@ describe("User Routes", () => {
   });
 
   test("Should update user", async () => {
-    const res = await request(app).put(`/api/users/${userId}`).send({
+    const res = await request(app).put(`/users/${userId}`).send({
       name: "Updated Name",
       phone: "9876543210",
     });
@@ -78,20 +77,20 @@ describe("User Routes", () => {
   });
 
   test("Should delete user", async () => {
-    const res = await request(app).delete(`/api/users/${userId}`);
+    const res = await request(app).delete(`/users/${userId}`);
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toBe("User deleted successfully");
   });
 
   test("Should delete all users", async () => {
-    await request(app).post("/api/users/signup").send({
+    await request(app).post("/users/signup").send({
       name: "Another User",
       email: "another@example.com",
       password: "Password123",
       phone: "1111111111",
     });
 
-    const res = await request(app).delete("/api/users");
+    const res = await request(app).delete("/users");
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toBe("All users deleted successfully");
   });
